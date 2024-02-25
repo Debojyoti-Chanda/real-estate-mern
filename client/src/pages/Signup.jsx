@@ -1,6 +1,66 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 const Signup = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (evt) => {
+    console.log(formData);
+    setFormData((prevdata) => {
+      return { ...prevdata, [evt.target.id]: evt.target.value };
+    });
+  };
+
+  const submitHandler = (evt) => {
+    evt.preventDefault();
+    setLoading(true);
+    fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        console.log(response);
+        if (response.status === 404) {
+          throw new Error("Page not Found");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setFormData({
+          username: "",
+          email: "",
+          password: "",
+        });
+        console.log(data);
+        setError(null)
+        if (data.success === false) {
+          setLoading(false);
+          setError(data.errMessage);
+          return
+        }
+        setLoading(false);
+        navigate("/login")
+      })
+      .catch((err) => {
+        setFormData({
+          username: "",
+          email: "",
+          password: "",
+        });
+        setLoading(false);
+        setError(err.message);
+        console.error("Error occurred while signing up in Catch block:", err);
+      });
+  };
+
   return (
     <>
       <section className="bg-gray-300">
@@ -17,7 +77,7 @@ const Signup = () => {
                 Create and account
               </h1>
               {/* form  */}
-              <form className="space-y-4 md:space-y-6" action="#">
+              <form className="space-y-4 md:space-y-6" onSubmit={submitHandler}>
                 <div>
                   <label
                     htmlFor="username"
@@ -32,6 +92,8 @@ const Signup = () => {
                     className="border   sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Username"
                     required=""
+                    onChange={handleChange}
+                    value={formData.username}
                   />
                 </div>
 
@@ -49,6 +111,8 @@ const Signup = () => {
                     className="border sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                     placeholder="name@company.com"
                     required=""
+                    onChange={handleChange}
+                    value={formData.email}
                   />
                 </div>
 
@@ -66,29 +130,32 @@ const Signup = () => {
                     placeholder="••••••••"
                     className="border sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                     required=""
+                    onChange={handleChange}
+                    value={formData.password}
                   />
                 </div>
 
                 <button
+                  disabled={loading}
                   type="submit"
                   className="w-full text-white bg-primary-600 hover:bg-slate-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
-                  Create an account
+                  {loading ? "Loading...." : "Create an account"}
                 </button>
               </form>
 
               <p className="text-sm font-light text-gray-200">
-                  Already have an account?{" "}
-                  <Link
+                Already have an account?{" "}
+                <Link
                   to={"/login"}
-                    className="font-medium hover:underline text-primary-500"
-                  >
-                    Login here
-                  </Link>
+                  className="font-medium hover:underline text-primary-500"
+                >
+                  Login here
+                </Link>
               </p>
-              
             </div>
           </div>
+          <div hidden={error ? false : true} className="text-red-500">{error}</div>
         </div>
       </section>
     </>
