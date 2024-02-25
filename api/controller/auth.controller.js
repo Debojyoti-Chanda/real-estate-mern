@@ -14,6 +14,7 @@ module.exports.postSignup = (req, res, next) => {
       res.status(201).json({ message: "Welcome!!" });
     })
     .catch((err) => {
-      res.status(500).json({ message: "Error during saving user" , error : err.message});
+        //   res.status(500).json({ message: "Error during saving user" , error : err.message});
+        next(err);
     });
 };

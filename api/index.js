@@ -28,6 +28,12 @@ mongoose
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 
+app.use((err, req, res, next) => {
+    const statuscode = err.statusCode || 500;
+    const errMessage = err.message || "Internal server Error";
+    return res.status(statuscode).json({ errMessage , success : false , statuscode});
+})
+
 
 //App listening
 const PORT = process.env.PORT || 3000;
