@@ -12,7 +12,7 @@ function App() {
   return (
     <>
       <Header/>
-      <div className='text-3xl font-bold underline'>App</div>
+      {/* <div className='text-3xl font-bold underline'>App</div> */}
       <Outlet/>
     </>
   )
