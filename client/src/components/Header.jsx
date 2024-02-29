@@ -1,8 +1,11 @@
 import React from "react";
 import searchicon from "../assets/searchicon.svg";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Header = () => {
+  const { currentUser } = useSelector((state) => state.user);
+  // console.log(currentUser)
   return (
     <header className="bg-gray-800 text-white p-4 flex flex-col md:flex-row justify-between items-center">
       {/* Logo */}
@@ -38,11 +41,15 @@ const Header = () => {
         >
           About
         </Link>
-        <Link
-          to="/login"
-          className="block md:inline-block text-center md:text-left hover:underline"
-        >
-          Login
+
+        <Link to="/profile">
+          {currentUser ? (
+            <img src={currentUser.avatar} alt="profile pic"  className="w-10 h-10 rounded-full object-cover"/>
+          ) : (
+            <li className="block md:inline-block text-center md:text-left hover:underline">
+              Login
+            </li>
+          )}
         </Link>
       </nav>
     </header>
