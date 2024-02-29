@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logInStart , logInSuccess,logInFailure } from "../redux/user/userSlice";
+import {
+  logInStart,
+  logInSuccess,
+  logInFailure,
+} from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
+
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,9 +29,7 @@ const Login = () => {
   const submitHandler = (evt) => {
     evt.preventDefault();
 
-
-
-    dispatch(logInStart())// setLoading(true); 
+    dispatch(logInStart()); // setLoading(true);
     fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -48,17 +52,17 @@ const Login = () => {
           password: "",
         });
         console.log(data);
-        
+
         if (data.success === false) {
           // setLoading(false);
           // setError(data.errMessage);
           dispatch(logInFailure(data.errMessage));
-          return
+          return;
         }
         // setError(null)
         // setLoading(false);
-        dispatch(logInSuccess(data))
-        navigate("/")
+        dispatch(logInSuccess(data));
+        navigate("/");
       })
       .catch((err) => {
         setFormData({
@@ -87,8 +91,7 @@ const Login = () => {
               {/* form  */}
               <form className="space-y-4 md:space-y-6" onSubmit={submitHandler}>
 
-              
-
+                
                 <div>
                   <label
                     htmlFor="email"
@@ -134,6 +137,9 @@ const Login = () => {
                 >
                   {loading ? "Loading...." : "Login"}
                 </button>
+                <div className='w-full flex flex-col items-center justify-center mt-0'>
+                  <OAuth />
+                </div>
               </form>
 
               <p className="text-sm font-light text-gray-200">
@@ -147,11 +153,13 @@ const Login = () => {
               </p>
             </div>
           </div>
-          <div hidden={error ? false : true} className="text-red-500">{error}</div>
+          <div hidden={error ? false : true} className="text-red-500">
+            {error}
+          </div>
         </div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
