@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logInStart , logInSuccess,logInFailure } from "../redux/user/userSlice";
 const Login = () => {
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
 
   const handleChange = (evt) => {
     setFormData((prevdata) => {
@@ -22,7 +25,7 @@ const Login = () => {
 
 
 
-    setLoading(true);
+    dispatch(logInStart())// setLoading(true); 
     fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,13 +48,16 @@ const Login = () => {
           password: "",
         });
         console.log(data);
-        setError(null)
+        
         if (data.success === false) {
-          setLoading(false);
-          setError(data.errMessage);
+          // setLoading(false);
+          // setError(data.errMessage);
+          dispatch(logInFailure(data.errMessage));
           return
         }
-        setLoading(false);
+        // setError(null)
+        // setLoading(false);
+        dispatch(logInSuccess(data))
         navigate("/")
       })
       .catch((err) => {
@@ -59,8 +65,9 @@ const Login = () => {
           email: "",
           password: "",
         });
-        setLoading(false);
-        setError(err.message);
+        // setLoading(false);
+        // setError(err.message);
+        dispatch(logInFailure(err.message));
         console.error("Error occurred while signing up in Catch block:", err);
       });
   };
