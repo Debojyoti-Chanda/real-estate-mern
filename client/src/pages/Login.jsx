@@ -36,7 +36,7 @@ const Login = () => {
       body: JSON.stringify(formData),
     })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status === 404) {
           if (!response.url.endsWith("/api/auth/login")) {
             throw new Error("Page not Found");
@@ -51,7 +51,7 @@ const Login = () => {
           email: "",
           password: "",
         });
-        console.log(data);
+        // console.log(data);
 
         if (data.success === false) {
           // setLoading(false);
