@@ -6,7 +6,7 @@ import {
   ref,
   getDownloadURL,
 } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 
 import {
@@ -150,7 +150,7 @@ const Profile = () => {
         console.log("Error occurred while Updating in Catch block:", err);
       });
   };
-  
+
   const logoutHandler = (evt) => {
     logoutUserStart();
     fetch("/api/auth/logout")
@@ -236,10 +236,16 @@ const Profile = () => {
         />
         <button
           disabled={loading}
-          className="bg-slate-200 w-1/4 p-2 rounded-2xl hover:bg-slate-500 hover:text-white"
+          className="bg-slate-300 w-1/4 p-2 rounded-2xl hover:bg-slate-500 hover:text-white"
         >
           {loading ? "Loading..." : "Update"}
         </button>
+        <Link
+          to={"/create-listing"}
+          className="bg-slate-300 w-1/4 p-2 rounded-2xl hover:bg-slate-500 hover:text-white text-center"
+        >
+          Create Listing
+        </Link>
       </form>
       <div className="flex flex-row justify-between items-center w-2/4 mx-auto mt-4 md:mt-8">
         <span className="text-red-700 cursor-pointer" onClick={deleteHandler}>
