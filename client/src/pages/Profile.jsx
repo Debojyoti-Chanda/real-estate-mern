@@ -16,15 +16,21 @@ import {
   deleteUserStart,
   deleteUserFailure,
   deleteUserSuccess,
+  logoutUserStart,
+  logoutUserFailure,
+  logoutUserSuccess,
 } from "../redux/user/userSlice";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
-  
+
   const [file, setFile] = useState(undefined);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [filePer, setFilePer] = useState(0);
-  const [formData, setFormData] = useState({ username: currentUser.username, email: currentUser.email });
+  const [formData, setFormData] = useState({
+    username: currentUser.username,
+    email: currentUser.email,
+  });
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const dispatch = useDispatch();
@@ -36,10 +42,10 @@ const Profile = () => {
     }
   }, [file]);
 
-/**
- * @description handles file upload 
- * @param {*} file 
- */
+  /**
+   * @description handles file upload
+   * @param {*} file
+   */
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
@@ -86,7 +92,7 @@ const Profile = () => {
     })
       .then((response) => {
         if (response.status === 404) {
-          if (!response.url.endsWith("/api/user/update")) {
+          if (!response.url.endsWith(`/api/user/update/${currentUser._id}`)) {
             throw new Error("Page not Found");
           } else {
             throw new Error("User Not Found");
@@ -121,26 +127,55 @@ const Profile = () => {
     dispatch(deleteUserStart());
     fetch(`/api/user/delete/${currentUser._id}`, {
       method: "DELETE",
-    }).then(res => {
-      if (res.status === 404) {
-        if (!res.url.endsWith("/api/user/update")) {
-          throw new Error("Page not Found");
-        } else {
-          throw new Error("User Not Found");
-        }
-      }
-      return res.json();
-    }).then(data => {
-      if (data.success === false) {
-        dispatch(deleteUserFailure(data.errMessage));
-        return;
-      }
-      dispatch(deleteUserSuccess(data));
-    }).catch(err => {
-      dispatch(deleteUserFailure(err.message));
-      console.log("Error occurred while Updating in Catch block:", err);
     })
-  }
+      .then((res) => {
+        if (res.status === 404) {
+          if (!res.url.endsWith(`/api/user/delete/${currentUser._id}`)) {
+            throw new Error("Page not Found");
+          } else {
+            throw new Error("User Not Found");
+          }
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success === false) {
+          dispatch(deleteUserFailure(data.errMessage));
+          return;
+        }
+        dispatch(deleteUserSuccess(data));
+      })
+      .catch((err) => {
+        dispatch(deleteUserFailure(err.message));
+        console.log("Error occurred while Updating in Catch block:", err);
+      });
+  };
+  
+  const logoutHandler = (evt) => {
+    logoutUserStart();
+    fetch("/api/auth/logout")
+      .then((res) => {
+        if (res.status === 404) {
+          if (!res.url.endsWith("/api/auth/logout")) {
+            throw new Error("Page not Found");
+          } else {
+            throw new Error("User Not Found");
+          }
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success === false) {
+          dispatch(logoutUserFailureUserFailure(data.errMessage));
+          return;
+        }
+        dispatch(logoutUserSuccess(data));
+      })
+      .catch((err) => {
+        dispatch(logoutUserFailure(err.message));
+        console.log("Error occurred while Updating in Catch block:", err);
+      });
+  };
 
   return (
     <>
@@ -199,16 +234,26 @@ const Profile = () => {
           className="border p-3 rounded-xl  md:w-2/4"
           onChange={onChangeHandler}
         />
-        <button disabled={loading} className="bg-slate-200 w-1/4 p-2 rounded-2xl hover:bg-slate-500 hover:text-white">
-          { loading ? 'Loading...' : 'Update'}
+        <button
+          disabled={loading}
+          className="bg-slate-200 w-1/4 p-2 rounded-2xl hover:bg-slate-500 hover:text-white"
+        >
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
       <div className="flex flex-row justify-between items-center w-2/4 mx-auto mt-4 md:mt-8">
-        <span className="text-red-700 cursor-pointer" onClick={deleteHandler}> Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span className="text-red-700 cursor-pointer" onClick={deleteHandler}>
+          {" "}
+          Delete Account
+        </span>
+        <span className="text-red-700 cursor-pointer" onClick={logoutHandler}>
+          Sign Out
+        </span>
       </div>
-      <p className="text-red-700 mt-4 text-center">{error ? error : ''}</p>
-      <p className="text-green-700 mt-4 text-center">{updateSuccess ? 'User Updated Successfully' : ''}</p>
+      <p className="text-red-700 mt-4 text-center">{error ? error : ""}</p>
+      <p className="text-green-700 mt-4 text-center">
+        {updateSuccess ? "User Updated Successfully" : ""}
+      </p>
     </>
   );
 };
