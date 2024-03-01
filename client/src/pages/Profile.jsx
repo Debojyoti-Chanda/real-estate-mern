@@ -13,6 +13,9 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserFailure,
+  deleteUserSuccess,
 } from "../redux/user/userSlice";
 
 const Profile = () => {
@@ -32,7 +35,7 @@ const Profile = () => {
       handleFileUpload(file);
     }
   }, [file]);
-  
+
 /**
  * @description handles file upload 
  * @param {*} file 
@@ -114,6 +117,31 @@ const Profile = () => {
       });
   };
 
+  const deleteHandler = (evt) => {
+    dispatch(deleteUserStart());
+    fetch(`/api/user/delete/${currentUser._id}`, {
+      method: "DELETE",
+    }).then(res => {
+      if (res.status === 404) {
+        if (!res.url.endsWith("/api/user/update")) {
+          throw new Error("Page not Found");
+        } else {
+          throw new Error("User Not Found");
+        }
+      }
+      return res.json();
+    }).then(data => {
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.errMessage));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+    }).catch(err => {
+      dispatch(deleteUserFailure(err.message));
+      console.log("Error occurred while Updating in Catch block:", err);
+    })
+  }
+
   return (
     <>
       <h1 className="text-2xl font-semibold text-center my-7">Profile</h1>
@@ -176,7 +204,7 @@ const Profile = () => {
         </button>
       </form>
       <div className="flex flex-row justify-between items-center w-2/4 mx-auto mt-4 md:mt-8">
-        <span className="text-red-700 cursor-pointer"> Delete Account</span>
+        <span className="text-red-700 cursor-pointer" onClick={deleteHandler}> Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
       <p className="text-red-700 mt-4 text-center">{error ? error : ''}</p>

@@ -33,3 +33,17 @@ module.exports.postUpdateUser = (req, res, next) => {
     })
     .catch((err) => next(err));
 };
+
+module.exports.deleteUser = (req, res, next) => {
+  if (req.userId !== req.params.id) {
+    return next(errorHandler(401, "You can only update your own Account"));
+  }
+  userModel
+    .findByIdAndDelete(req.userId)
+    .then((response) => {
+      res.status(200).clearCookie("access_token").json({ message: "User has been deleted..." });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
