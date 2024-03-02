@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.post("/create", verifyToken, listController.postCreateListing);
 
+router.get('/listings/:id', verifyToken, listController.getUserListings);
+
 module.exports = router;
