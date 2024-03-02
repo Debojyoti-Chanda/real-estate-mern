@@ -32,6 +32,8 @@ const Profile = () => {
     email: currentUser.email,
   });
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [listingError, setListingError] = useState(null);
+  const [listData, setListData] = useState([]);
 
   const dispatch = useDispatch();
   const fileRef = useRef();
@@ -177,6 +179,24 @@ const Profile = () => {
       });
   };
 
+  const showListingHandler = (evt) => {
+    setListingError(false);
+    fetch(`/api/listing/listings/${currentUser._id}`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((lists) => {
+        if (lists.success === false) {
+          setListingError(true);
+          return;
+        }
+        setListData(lists);
+      })
+      .catch((err) => {
+        setListingError(true);
+      });
+  };
+
   return (
     <>
       <h1 className="text-2xl font-semibold text-center my-7">Profile</h1>
@@ -260,6 +280,56 @@ const Profile = () => {
       <p className="text-green-700 mt-4 text-center">
         {updateSuccess ? "User Updated Successfully" : ""}
       </p>
+
+      <div className="flex flex-col justify-between items-center m-4">
+        <span
+          className="text-green-700 cursor-pointer"
+          onClick={showListingHandler}
+        >
+          Show Listings
+        </span>
+        <p hidden={!listingError} className="text-red-700 m-4">
+          Error During Show Listings
+        </p>
+        <div className='sm:w-3/5'>
+          {listData.length > 0 && (
+            <div>
+              <h3 className="font-semibold text-center text-2xl my-7">
+                Your Listings
+              </h3>
+              {listData.map((list) => {
+                return (
+                  <>
+                    <div
+                      key={list._id}
+                      className="flex flex-row justify-between items-center border m-2 rounded-lg"
+                    >
+                      <Link
+                        to={`/listing/${list._id}`}
+                        className="flex flex-row justify-between items-center"
+                      >
+                        <img
+                          src={list.imageURL[0]}
+                          alt="Property Image"
+                          className="h-24 w-24 m-2 object-contain "
+                        />
+
+                        <div className="m-2 font-semibold hover:underline">
+                          {list.name}{" "}
+                        </div>
+                      </Link>
+                      <div className=" flex flex-col gap-3 m-2">
+                        <button className="text-green-700">Edit</button>
+                        <button className="text-red-700">Delete</button>
+                      </div>
+                    </div>
+                  </>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </>
   );
 };
