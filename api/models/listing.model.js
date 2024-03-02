@@ -46,7 +46,7 @@ const listingSchema = new mongoose.Schema({
     required: true,
   },
   imageURL: {
-    type: String,
+    type: Array,
     required: true,
   },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
