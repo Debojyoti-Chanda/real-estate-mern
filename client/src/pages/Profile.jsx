@@ -197,6 +197,27 @@ const Profile = () => {
       });
   };
 
+  const deleteListHandler = (evt, listId) => {
+    fetch(`/api/listing/delete/${listId}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success === false) {
+          console.log(data.message);
+          return;
+        }
+        setListData((prevLists) =>
+          prevLists.filter((list) => list._id !== listId)
+        );
+      })
+      .catch((err) => {
+        console.log("Error while deleting the list");
+      });
+  };
+
   return (
     <>
       <h1 className="text-2xl font-semibold text-center my-7">Profile</h1>
@@ -291,7 +312,7 @@ const Profile = () => {
         <p hidden={!listingError} className="text-red-700 m-4">
           Error During Show Listings
         </p>
-        <div className='sm:w-3/5'>
+        <div className="sm:w-3/5">
           {listData.length > 0 && (
             <div>
               <h3 className="font-semibold text-center text-2xl my-7">
@@ -299,31 +320,34 @@ const Profile = () => {
               </h3>
               {listData.map((list) => {
                 return (
-                  <>
-                    <div
-                      key={list._id}
-                      className="flex flex-row justify-between items-center border m-2 rounded-lg"
+                  <div
+                    key={list._id}
+                    className="flex flex-row justify-between items-center border m-2 rounded-lg"
+                  >
+                    <Link
+                      to={`/listing/${list._id}`}
+                      className="flex flex-row justify-between items-center"
                     >
-                      <Link
-                        to={`/listing/${list._id}`}
-                        className="flex flex-row justify-between items-center"
-                      >
-                        <img
-                          src={list.imageURL[0]}
-                          alt="Property Image"
-                          className="h-24 w-24 m-2 object-contain "
-                        />
+                      <img
+                        src={list.imageURL[0]}
+                        alt="Property Image"
+                        className="h-24 w-24 m-2 object-contain "
+                      />
 
-                        <div className="m-2 font-semibold hover:underline">
-                          {list.name}{" "}
-                        </div>
-                      </Link>
-                      <div className=" flex flex-col gap-3 m-2">
-                        <button className="text-green-700">Edit</button>
-                        <button className="text-red-700">Delete</button>
+                      <div className="m-2 font-semibold hover:underline">
+                        {list.name}{" "}
                       </div>
+                    </Link>
+                    <div className=" flex flex-col gap-3 m-2">
+                      <button className="text-green-700">Edit</button>
+                      <button
+                        onClick={(evt) => deleteListHandler(evt, list._id)}
+                        className="text-red-700"
+                      >
+                        Delete
+                      </button>
                     </div>
-                  </>
+                  </div>
                 );
               })}
             </div>
