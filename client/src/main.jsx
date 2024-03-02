@@ -15,6 +15,7 @@ import { store, persistor } from "./redux/store.js";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import CreateListing from "./pages/CreateListing.jsx";
+import EditListing from "./pages/EditListing.jsx";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
         children: [
           { path: "profile", element: <Profile /> },
           { path: "create-listing", element: <CreateListing /> },
+          { path: "edit-listing/:listingId", element: <EditListing/>},
         ],
       },
     ],

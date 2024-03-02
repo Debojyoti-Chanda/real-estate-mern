@@ -339,7 +339,9 @@ const Profile = () => {
                       </div>
                     </Link>
                     <div className=" flex flex-col gap-3 m-2">
-                      <button className="text-green-700">Edit</button>
+                      <Link to={`/edit-listing/${list._id}`}>
+                        <button className="text-green-700">Edit</button>
+                      </Link>
                       <button
                         onClick={(evt) => deleteListHandler(evt, list._id)}
                         className="text-red-700"
