@@ -6,6 +6,7 @@ const Search = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
   // console.log(listings);
+  const [showmore, setShowmore] = useState(false);
   const [sidebarData, setSidebarData] = useState({
     searchTerm: "",
     type: "all",
@@ -45,6 +46,7 @@ const Search = () => {
       });
     }
     const searchQuery = urlParams.toString();
+    setShowmore(false);
     setLoading(true);
     fetch(`/api/listing/getLists?${searchQuery}`)
       .then((res) => {
@@ -52,6 +54,11 @@ const Search = () => {
       })
       .then((data) => {
         setListings(data);
+        if (data.length > 8) {
+          setShowmore(true);
+        } else {
+          setShowmore(false);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -105,6 +112,26 @@ const Search = () => {
     urlParams.set("order", sidebarData.order);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
+  };
+
+  const showmoreHandler = (evt) => {
+    const numOfListings = listings.length;
+    const startIndex = numOfListings;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("startIndex", startIndex);
+    const searchQuery = urlParams.toString();
+    fetch(`/api/listing/getLists?${searchQuery}`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.length < 9) {
+          setShowmore(false);
+        }
+        setListings((prevData) => {
+          return [...prevData, ...data];
+        });
+      });
   };
   return (
     <div className="flex flex-col sm:flex-row sm:min-h-screen">
@@ -236,8 +263,17 @@ const Search = () => {
           {!loading &&
             listings &&
             listings.map((list) => {
-              return <Card list={list} key={list._id}/>;
+              return <Card list={list} key={list._id} />;
             })}
+          {showmore && (
+            <button
+              onClick={showmoreHandler}
+              className=" font-medium hover:underline p-5 w-full text-center text-green-600"
+            >
+              {" "}
+              Show More
+            </button>
+          )}
         </div>
       </div>
     </div>
