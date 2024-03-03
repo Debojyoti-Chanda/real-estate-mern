@@ -14,4 +14,6 @@ router.post('/edit/:id', verifyToken, listController.postEditList);
 
 router.get('/lists/:id', listController.getList);
 
+router.get('/getLists', listController.getLists);
+
 module.exports = router;
