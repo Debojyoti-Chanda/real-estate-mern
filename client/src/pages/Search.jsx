@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Card from "../components/Card";
 
 const Search = () => {
   const [listings, setListings] = useState([]);
@@ -221,10 +222,23 @@ const Search = () => {
         </form>
       </div>
 
-      <div className="className">
+      <div className=" flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-500 mt-5">
           Listing Results
         </h1>
+        <div className=" p-7 flex flex-wrap sm:gap-3 justify-center items-center sm:justify-normal sm:items-start">
+          {!loading && listings.length === 0 && (
+            <p className="text-xl text-slate-600">No Listing Found!</p>
+          )}
+          {loading && (
+            <p className="text-xl text-slate-600 text-center w-full"></p>
+          )}
+          {!loading &&
+            listings &&
+            listings.map((list) => {
+              return <Card list={list} key={list._id}/>;
+            })}
+        </div>
       </div>
     </div>
   );
