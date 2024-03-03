@@ -41,9 +41,23 @@ module.exports.deleteUser = (req, res, next) => {
   userModel
     .findByIdAndDelete(req.userId)
     .then((response) => {
-      res.status(200).clearCookie("access_token").json({ message: "User has been deleted..." });
+      res
+        .status(200)
+        .clearCookie("access_token")
+        .json({ message: "User has been deleted..." });
     })
     .catch((error) => {
       next(error);
     });
+};
+
+module.exports.getUser = (req, res, next) => {
+  userModel
+    .findById(req.params.id)
+    .then((user) => {
+      if (!user) next(errorHandler(404, "User not found"));
+      const { password, ...rest } = user._doc;
+      res.status(200).json(rest);
+    })
+    .catch((err) => next(err));
 };

@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
-
+import { useSelector } from "react-redux";
 import {
   FaBath,
   FaBed,
@@ -14,12 +14,15 @@ import {
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import Contact from "../components/Contact";
 
 const Listing = () => {
+  const { currentUser } = useSelector((state) => state.user);
   SwiperCore.use([Navigation]);
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [contact, setContact] = useState(false);
   const [copied, setCopied] = useState(false);
   const params = useParams();
   useEffect(() => {
@@ -45,7 +48,7 @@ const Listing = () => {
         setError(true);
       });
   }, []);
-  
+
   return (
     <main>
       {loading && (
@@ -94,9 +97,7 @@ const Listing = () => {
           <div className="flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4">
             <p className="text-2xl font-semibold">
               {listing.name} - ${" "}
-              {listing.offer
-                ? listing.discountedPrice
-                : listing.regularPrice}
+              {listing.offer ? listing.discountedPrice : listing.regularPrice}
               {listing.type === "rent" && " / month"}
             </p>
             <p className="flex items-center mt-6 gap-2 text-slate-600  text-sm">
@@ -139,6 +140,15 @@ const Listing = () => {
                 {listing.furnished ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
+            {currentUser && listing.userId !== currentUser._id && !contact && (
+              <button
+                className=" bg-slate-500 text-white rounded-2xl uppercase hover:opacity-85 w-80 self-center m-5 p-2"
+                onClick={()=> setContact(true)}
+              >
+                Contact Landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing} />}
           </div>
         </div>
       )}

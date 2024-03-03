@@ -11,4 +11,6 @@ router.post('/update/:id', verifyToken, userController.postUpdateUser);
 
 router.delete('/delete/:id', verifyToken, userController.deleteUser);
 
+router.get('/:id', verifyToken, userController.getUser);
+
 module.exports = router;
