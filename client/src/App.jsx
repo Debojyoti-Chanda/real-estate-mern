@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from './components/Header'
+import Footer from './components/Footer'
 
 /**
  * @description layout or the landing page is created 
@@ -13,7 +14,8 @@ function App() {
     <>
       <Header/>
       {/* <div className='text-3xl font-bold underline'>App</div> */}
-      <Outlet/>
+      <Outlet />
+      <Footer/>
     </>
   )
 }
