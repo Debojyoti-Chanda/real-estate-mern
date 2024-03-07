@@ -1,4 +1,3 @@
-
 # Magic Estate - A Real Estate Website
 
 Website to sell or rent property where buyer and seller meet
