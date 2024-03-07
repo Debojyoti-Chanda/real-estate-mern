@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { signUpStart,signUpFailure,signUpSuccess } from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 const Signup = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
@@ -9,11 +13,11 @@ const Signup = () => {
     password: "",
   });
 
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
 
   const handleChange = (evt) => {
-    console.log(formData);
     setFormData((prevdata) => {
       return { ...prevdata, [evt.target.id]: evt.target.value };
     });
@@ -21,16 +25,22 @@ const Signup = () => {
 
   const submitHandler = (evt) => {
     evt.preventDefault();
-    setLoading(true);
+    dispatch(signUpStart())
     fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     })
       .then((response) => {
-        console.log(response);
+        // if (response.status === 404) {
+        //   throw new Error("Page not Found");
+        // }
         if (response.status === 404) {
-          throw new Error("Page not Found");
+          if (!response.url.endsWith("/api/auth/signup")) {
+            throw new Error("Page not Found");
+          } else {
+            throw new Error("User Not Found");
+          }
         }
         return response.json();
       })
@@ -40,15 +50,12 @@ const Signup = () => {
           email: "",
           password: "",
         });
-        console.log(data);
-        setError(null)
         if (data.success === false) {
-          setLoading(false);
-          setError(data.errMessage);
+          dispatch(signUpFailure(data.errMessage))
           return
         }
-        setLoading(false);
-        navigate("/login")
+        dispatch(signUpSuccess(data));
+        navigate("/")
       })
       .catch((err) => {
         setFormData({
@@ -56,8 +63,7 @@ const Signup = () => {
           email: "",
           password: "",
         });
-        setLoading(false);
-        setError(err.message);
+        dispatch(signUpFailure(err.message));
         console.error("Error occurred while signing up in Catch block:", err);
       });
   };

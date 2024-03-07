@@ -12,7 +12,12 @@ module.exports.postSignup = (req, res, next) => {
       return newUser.save();
     })
     .then((usrObj) => {
-      res.status(201).json({ message: "Welcome!!" });
+      const token = jwt.sign({ userId: usrObj._id }, process.env.JWT_SECRET);
+      const { password, ...details } = usrObj._doc;
+      res
+        .cookie("access_token", token, { httpOnly: true })
+        .status(201)
+        .json(details);
     })
     .catch((err) => {
       //   res.status(500).json({ message: "Error during saving user" , error : err.message});
