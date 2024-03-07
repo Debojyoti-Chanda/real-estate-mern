@@ -6,6 +6,8 @@ const dotenv = require("dotenv");
 const app = express();
 const cookieParser = require("cookie-parser");
 
+const path = require("path");
+
 const userRouter = require("./routes/user.route");
 const authRouter = require("./routes/auth.route");
 const listRouter = require("./routes/listing.route");
@@ -19,6 +21,8 @@ app.use(cookieParser());
 // Body parser middleware
 app.use(bodyParser.json());
 
+const _dirname = path.resolve()
+
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI, {})
@@ -31,6 +35,12 @@ mongoose
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listRouter);
+
+app.use(express.static(path.join(_dirname, '/client/dist')));
+
+app.get('*', (req, res, next) => {
+  res.sendFile(path.join(__dirname, 'client','dist','index.html'));
+})
 
 app.use((err, req, res, next) => {
   const statuscode = err.statusCode || 500;
