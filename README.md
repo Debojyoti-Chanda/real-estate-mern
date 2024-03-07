@@ -1,4 +1,4 @@
-# Magic Estate - A Real Estate Website
+# Magic Estate - A Real Estate Website [🔗]()
 
 Website to sell or rent property where buyer and seller meet
 
@@ -17,4 +17,3 @@ Website to sell or rent property where buyer and seller meet
 ![Home 2](https://github.com/Debojyoti-Chanda/real-estate-mern/assets/90633270/f9666492-b676-43fd-9c12-656fdd152efe)
 
 
-#### [🔗 Link]()
